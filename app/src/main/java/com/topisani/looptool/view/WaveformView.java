@@ -24,6 +24,7 @@ public class WaveformView extends SurfaceView implements Runnable, SurfaceHolder
     MediaRecorder mRecorder;
     LimitedSizeQueue<Float> points;
     double amp = 0;
+    float maxMeasuredAmp = 0;
     float xscale = 8;
 
     public WaveformView(Context context, AttributeSet attributeSet) {
@@ -48,8 +49,6 @@ public class WaveformView extends SurfaceView implements Runnable, SurfaceHolder
 
         holder = getHolder();
         holder.addCallback(this);
-        resume();
-
     }
 
     public float getAmplitude() {
@@ -79,10 +78,16 @@ public class WaveformView extends SurfaceView implements Runnable, SurfaceHolder
     private Canvas drawWaveform(Canvas c) {
         float height = getHeight()/2;
         float waveHeight = (float) (height * 0.75);
-        points.add((float) ((waveHeight)-((waveHeight)/((getAmplitude()/1000)+1))));
+        float amp = getAmplitude();
+        points.add(amp);
+        if (amp > this.maxMeasuredAmp ) this.maxMeasuredAmp = amp;
         for (int i = 0; i < points.size() -1; i++) {
-            c.drawLine(i * xscale, height - points.get(i), (i + 1) * xscale, height - points.get(i + 1), mLinePaint);
-            c.drawLine(i * xscale, height + points.get(i), (i + 1) * xscale, height + points.get(i + 1), mLinePaint);
+            float y = (float) ((waveHeight)-((waveHeight)/((points.get(i)/this.maxMeasuredAmp)+1)));
+            float yNext = (float) ((waveHeight)-((waveHeight)/((points.get(i + 1)/this.maxMeasuredAmp)+1)));
+            float x = i * xscale;
+            float xNext = (i+1) * xscale;
+            c.drawLine(x, height - y, xNext, height - yNext, mLinePaint);
+            c.drawLine(x, height + y, xNext, height + yNext, mLinePaint);
         }
         mLinePaint.setTextSize(60F);
         c.drawText(String.valueOf(getAmplitude()), 100F, 200F, mLinePaint);
@@ -119,6 +124,6 @@ public class WaveformView extends SurfaceView implements Runnable, SurfaceHolder
 
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
-        pause
+        pause();
     }
 }
