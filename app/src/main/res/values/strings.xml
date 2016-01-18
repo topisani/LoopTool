@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">LoopTool</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_recording_list">New Recording</string>
+    <string name="txt_record_new">New Recording</string>
+    <string name="play">Play</string>
+    <string name="stop">Stop</string>
+    <string name="delete">Delete</string>
+</resources>
