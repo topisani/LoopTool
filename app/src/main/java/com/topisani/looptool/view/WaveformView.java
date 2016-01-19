@@ -30,7 +30,7 @@ public class WaveformView extends SurfaceView implements Runnable, SurfaceHolder
     public WaveformView(Context context, AttributeSet attributeSet) {
         super(context, attributeSet);
         mRecorder = new MediaRecorder();
-        points = new LimitedSizeQueue<>((int) (1000/xscale));
+        points = new LimitedSizeQueue<>((int) (getWidth()/xscale));
         mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
         mRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
         mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
@@ -77,15 +77,17 @@ public class WaveformView extends SurfaceView implements Runnable, SurfaceHolder
 
     private Canvas drawWaveform(Canvas c) {
         float height = getHeight()/2;
+        float width = getWidth();
+        float xoffset = width - ( points.size() * xscale);
         float waveHeight = (float) (height * 0.75);
         float amp = getAmplitude();
         points.add(amp);
         if (amp > this.maxMeasuredAmp ) this.maxMeasuredAmp = amp;
         for (int i = 0; i < points.size() -1; i++) {
-            float y = (float) ((waveHeight)-((waveHeight)/((points.get(i)/this.maxMeasuredAmp)+1)));
-            float yNext = (float) ((waveHeight)-((waveHeight)/((points.get(i + 1)/this.maxMeasuredAmp)+1)));
-            float x = i * xscale;
-            float xNext = (i+1) * xscale;
+            float y     = waveHeight - ( waveHeight / ( ( points.get(  i  ) / this.maxMeasuredAmp ) + 1 ) );
+            float yNext = waveHeight - ( waveHeight / ( ( points.get(i + 1) / this.maxMeasuredAmp ) + 1 ) );
+            float x     = xoffset + (    i    * xscale);
+            float xNext = xoffset + ( i + 1 ) * xscale;
             c.drawLine(x, height - y, xNext, height - yNext, mLinePaint);
             c.drawLine(x, height + y, xNext, height + yNext, mLinePaint);
         }
@@ -119,7 +121,7 @@ public class WaveformView extends SurfaceView implements Runnable, SurfaceHolder
 
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-
+        points = new LimitedSizeQueue<>((int) (getWidth()/xscale));
     }
 
     @Override
