@@ -6,7 +6,6 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.media.MediaRecorder;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
@@ -70,7 +69,6 @@ public class WaveformView extends SurfaceView implements Runnable, SurfaceHolder
             Canvas canvas = holder.lockCanvas();
             canvas.drawColor(Color.WHITE);
             canvas = drawWaveform(canvas);
-            Log.d("", "run: true");
             holder.unlockCanvasAndPost(canvas);
         }
     }
@@ -78,7 +76,7 @@ public class WaveformView extends SurfaceView implements Runnable, SurfaceHolder
     private Canvas drawWaveform(Canvas c) {
         float height = getHeight()/2;
         float width = getWidth();
-        float xoffset = width - ( points.size() * xscale);
+        float xOffset = width - ( points.size() * xscale);
         float waveHeight = (float) (height * 0.75);
         float amp = getAmplitude();
         points.add(amp);
@@ -86,8 +84,8 @@ public class WaveformView extends SurfaceView implements Runnable, SurfaceHolder
         for (int i = 0; i < points.size() -1; i++) {
             float y     = waveHeight - ( waveHeight / ( ( points.get(  i  ) / this.maxMeasuredAmp ) + 1 ) );
             float yNext = waveHeight - ( waveHeight / ( ( points.get(i + 1) / this.maxMeasuredAmp ) + 1 ) );
-            float x     = xoffset + (    i    * xscale);
-            float xNext = xoffset + ( i + 1 ) * xscale;
+            float x     = xOffset + (    i    * xscale);
+            float xNext = xOffset + ( i + 1 ) * xscale;
             c.drawLine(x, height - y, xNext, height - yNext, mLinePaint);
             c.drawLine(x, height + y, xNext, height + yNext, mLinePaint);
         }
